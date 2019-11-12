@@ -32,8 +32,11 @@ import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
+
+import javax.annotation.ManagedBean;
 
 /**
  * A bean definition scanner that detects bean candidates on the classpath,
@@ -42,20 +45,20 @@ import org.springframework.util.PatternMatchUtils;
  *
  * <p>Candidate classes are detected through configurable type filters. The
  * default filters include classes that are annotated with Spring's
- * {@link org.springframework.stereotype.Component @Component},
+ * {@link Component @Component},
  * {@link org.springframework.stereotype.Repository @Repository},
  * {@link org.springframework.stereotype.Service @Service}, or
  * {@link org.springframework.stereotype.Controller @Controller} stereotype.
  *
- * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
+ * <p>Also supports Java EE 6's {@link ManagedBean} and
  * JSR-330's {@link javax.inject.Named} annotations, if available.
  *
  * @author Mark Fisher
- * @author Juergen Hoeller
+ * @author Juergen Hoelle
  * @author Chris Beams
  * @since 2.5
  * @see AnnotationConfigApplicationContext#scan
- * @see org.springframework.stereotype.Component
+ * @see Component
  * @see org.springframework.stereotype.Repository
  * @see org.springframework.stereotype.Service
  * @see org.springframework.stereotype.Controller
@@ -102,7 +105,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param registry the {@code BeanFactory} to load bean definitions into, in the form
 	 * of a {@code BeanDefinitionRegistry}
 	 * @param useDefaultFilters whether to include the default filters for the
-	 * {@link org.springframework.stereotype.Component @Component},
+	 * {@link Component @Component},
 	 * {@link org.springframework.stereotype.Repository @Repository},
 	 * {@link org.springframework.stereotype.Service @Service}, and
 	 * {@link org.springframework.stereotype.Controller @Controller} stereotype annotations
@@ -125,7 +128,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param registry the {@code BeanFactory} to load bean definitions into, in the form
 	 * of a {@code BeanDefinitionRegistry}
 	 * @param useDefaultFilters whether to include the default filters for the
-	 * {@link org.springframework.stereotype.Component @Component},
+	 * {@link Component @Component},
 	 * {@link org.springframework.stereotype.Repository @Repository},
 	 * {@link org.springframework.stereotype.Service @Service}, and
 	 * {@link org.springframework.stereotype.Controller @Controller} stereotype annotations
@@ -147,7 +150,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * @param registry the {@code BeanFactory} to load bean definitions into, in the form
 	 * of a {@code BeanDefinitionRegistry}
 	 * @param useDefaultFilters whether to include the default filters for the
-	 * {@link org.springframework.stereotype.Component @Component},
+	 * {@link Component @Component},
 	 * {@link org.springframework.stereotype.Repository @Repository},
 	 * {@link org.springframework.stereotype.Service @Service}, and
 	 * {@link org.springframework.stereotype.Controller @Controller} stereotype annotations

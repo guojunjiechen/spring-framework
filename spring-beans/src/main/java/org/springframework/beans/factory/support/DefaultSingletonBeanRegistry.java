@@ -219,6 +219,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					//这里便是创建一个bean的入口了
+					//spring会首先实例化一个对象，然后走生命周期
+					//走生命周期的时候前面说过会判断是否允许循环依赖
+					//如果允许则会把创建出来的这个对象放到第二个map当中
+					//然后接着走生命周期当他走到属性填充的时候
+					//会去get一下B，因为需要填充B，也就是大家认为的自动注入
+					//这些代码下文分析，如果走完了生命周期
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				}

@@ -589,6 +589,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
+			//填充属性
 			populateBean(beanName, mbd, instanceWrapper);
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
@@ -943,6 +944,47 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bean the raw bean instance
 	 * @return the object to expose as bean reference
 	 */
+	//这个方法内容比较少，但是很复杂，因为是对后置处理器的调用
+	//关于后置处理器笔者其实要说话很多很多
+	//现在市面上可见的资料或者书籍对后置处理器的说法笔者一般都不苟同
+	//我在B站上传过一个4个小时的视频，其中对spring后置处理器做了详细的分析
+	//也提出了一些自己的理解和主流理解不同的地方，有兴趣同学可以去看看
+	//其实简单说--这个方法作用主要是为了来处理aop的；
+	//当然还有其他功能，但是一般的读者最熟悉的就是aop
+	//这里我说明一下，aop的原理或者流程有很多书籍说到过
+	//但是笔者今天亲测了，现在市面可见的资料和书籍对aop的说法都不全
+	//很多资料提到aop是在spring bean的生命周期里面填充属性之后的代理周期完成的
+	//而这个代理周期甚至是在执行生命周期回调方法之后的一个周期
+	//那么问题来了？什么叫spring生命周期回调方法周期呢？
+	// 首先spring bean生命周期和spring生命周期回调方法周期是两个概念
+	//spring生命周期回调方法是spring bean生命周期的一部分、或者说一个周期
+	//简单理解就是spring bean的生命的某个过程会去执行spring的生命周期的回调方法
+	//比如你在某个bean的方法上面写一个加@PostConstruct的方法（一般称bean初始化方法）
+	//那么这个方法会在spring实例化一个对象之后，填充属性之后执行这个加注解的方法
+	//我这里叫做spring 生命周期回调方法的生命周期，不是我胡说，有官方文档可以参考的
+	//在执行完spring生命周期回调方法的生命周期之后才会执行代理生命周期
+	//在代理这个生命周期当中如果有需要会完成aop的功能
+	//以上是现在主流的说法，也是一般书籍或者“某些大师”的说法
+	//但是在循环引用的时候就不一样了，循环引用的情况下这个周期这里就完成了aop的代理
+	//这个周期严格意义上是在填充属性之前（填充属性也是一个生命周期阶段）
+	//填充属性的周期甚至在生命周期回调方法之前，更在代理这个周期之前了
+	//简单来说主流说法代理的生命周期比如在第8个周期或者第八步吧
+	//但是笔者这里得出的结论，如果一个bean是循环引用的则代理的周期可能在第3步就完成了
+	//那么为什么需要在第三步就完成呢？
+	//试想一下A、B两个类，现在对A类做aop处理，也就是需要对A代理
+	//不考虑循环引用 spring 先实例化A，然后走生命周期确实在第8个周期完成的代理
+	//关于这个结论可以去看b站我讲的spring aop源码分析
+	//但是如果是循环依赖就会有问题
+	//比如spring 实例化A 然后发现需要注入B这个时候A还没有走到8步
+	//还没有完成代理，发觉需要注入B，便去创建B，创建B的时候
+	//发觉需要注入A，于是创建A，创建的过程中通过getSingleton
+	//得到了a对象，注意是对象，一个没有完成代理的对象
+	//然后把这个a注入给B？这样做合适吗？注入的a根本没有aop功能；显然不合适
+	//		因为b中注入的a需要是一个代理对象
+	//而这个时候a存在第二个map中；不是一个代理对象；
+	//于是我在第二个map中就不能单纯的存一个对象，需要存一个工厂
+	//这个工厂在特殊的时候需要对a对象做改变，比如这里说的代理（需要aop功能的情况）
+	//这也是三个map存在的必要性，不知道读者能不能get到点
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {

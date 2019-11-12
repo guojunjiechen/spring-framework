@@ -24,12 +24,13 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
  * Standalone application context, accepting annotated classes as input - in particular
  * {@link Configuration @Configuration}-annotated classes, but also plain
- * {@link org.springframework.stereotype.Component @Component} types and JSR-330 compliant
+ * {@link Component @Component} types and JSR-330 compliant
  * classes using {@code javax.inject} annotations. Allows for registering classes one by
  * one using {@link #register(Class...)} as well as for classpath scanning using
  * {@link #scan(String...)}.
@@ -62,6 +63,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
 	public AnnotationConfigApplicationContext() {
+		//隐式调用了super方法, 初始化beanFactory，默认实现类为DefaultListableBeanFactory
+		super();
+		//创建 AnnotatedBeanDefinitionReader,
+		//创建时会向传入的 BeanDefinitionRegistry中 注册注解配置相关的 processors 的 BeanDefinition
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
@@ -83,8 +88,13 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * e.g. {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
+		//调用默认无参构造器,里面有一大堆初始化逻辑
 		this();
+		//把传入的Class进行注册,Class既可以有@Configuration注解,也可以没有@Configuration注解
+		//怎么注册? 委托给了 org.springframework.context.annotation.AnnotatedBeanDefinitionReader.register 方法进行注册
+		// 传入Class 生成  BeanDefinition , 然后通过 注册到 BeanDefinitionRegistry
 		register(annotatedClasses);
+		//刷新容器上下文
 		refresh();
 	}
 

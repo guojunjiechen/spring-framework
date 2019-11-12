@@ -49,7 +49,7 @@
 	<!-- spring-orm -->
 	<suppress files="jpa[\\/]vendor[\\/]Database" checks="JavadocVariable|JavadocStyle"/>
 
-	<!-- spring-tx -->
+	<!-- build -->
 	<suppress files="TransactionSystemException" checks="MutableException" />
 	<suppress files="TransactionTemplate" checks="EqualsHashCode" />
 
