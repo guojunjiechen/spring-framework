@@ -16,29 +16,19 @@
 
 package org.springframework.context.support;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.support.*;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.lang.Nullable;
+
+import java.util.*;
 
 /**
  * Delegate for AbstractApplicationContext's post-processor handling.
@@ -60,7 +50,9 @@ final class PostProcessorRegistrationDelegate {
 
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			//这里面存放的是 beanFactoryPostProcessor
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			// 里面存放 BeanDefinitionRegistryPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
 			//beanFactoryPostProcessors是传进来里的对象,把传入的对象分类放入 BeanFactoryPostProcessor 和  BeanDefinitionRegistryPostProcessor
@@ -91,7 +83,7 @@ final class PostProcessorRegistrationDelegate {
 			//因为到这里spring还没有去扫描Bean,获取不到我们通过@Component标识的自定义BeanDefinitionRegistryPostProcessor
 			//一般默认情况下,这里只有一个,BeanName:org.springframework.context.annotation.internalConfigurationAnnotationProcessor
 			//对应的BeanClass:ConfigurationClassPostProcessor
-
+			//根据类型从beanDefinitionMap中找到名字
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -110,6 +102,7 @@ final class PostProcessorRegistrationDelegate {
 			// 执行BeanDefinitionRegistryPostProcessor,currentRegistryProcessors中放的是spring内部的BeanDefinitionRegistryPostProcessor
 			// 默认情况下,只有 org.springframework.context.annotation.ConfigurationClassPostProcessor
 			// ConfigurationClassPostProcessor 里面就是在执行扫描Bean,并且注册BeanDefinition
+			//这行代码完成了注解的扫描
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			// 清空这个临时变量,方便后面再使用
 			currentRegistryProcessors.clear();

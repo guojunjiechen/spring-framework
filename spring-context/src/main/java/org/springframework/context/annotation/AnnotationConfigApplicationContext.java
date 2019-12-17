@@ -16,8 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -26,6 +24,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import java.util.function.Supplier;
 
 /**
  * Standalone application context, accepting annotated classes as input - in particular
@@ -44,12 +44,12 @@ import org.springframework.util.Assert;
  *
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 3.0
  * @see #register
  * @see #scan
  * @see AnnotatedBeanDefinitionReader
  * @see ClassPathBeanDefinitionScanner
  * @see org.springframework.context.support.GenericXmlApplicationContext
+ * @since 3.0
  */
 public class AnnotationConfigApplicationContext extends GenericApplicationContext implements AnnotationConfigRegistry {
 
@@ -73,6 +73,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	/**
 	 * Create a new AnnotationConfigApplicationContext with the given DefaultListableBeanFactory.
+	 *
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 */
 	public AnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
@@ -84,8 +85,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	/**
 	 * Create a new AnnotationConfigApplicationContext, deriving bean definitions
 	 * from the given annotated classes and automatically refreshing the context.
+	 *
 	 * @param annotatedClasses one or more annotated classes,
-	 * e.g. {@link Configuration @Configuration} classes
+	 *                         e.g. {@link Configuration @Configuration} classes
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		//调用默认无参构造器,里面有一大堆初始化逻辑
@@ -101,6 +103,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	/**
 	 * Create a new AnnotationConfigApplicationContext, scanning for bean definitions
 	 * in the given packages and automatically refreshing the context.
+	 *
 	 * @param basePackages the packages to check for annotated classes
 	 */
 	public AnnotationConfigApplicationContext(String... basePackages) {
@@ -127,6 +130,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * <p>Default is {@link org.springframework.context.annotation.AnnotationBeanNameGenerator}.
 	 * <p>Any call to this method must occur prior to calls to {@link #register(Class...)}
 	 * and/or {@link #scan(String...)}.
+	 *
 	 * @see AnnotatedBeanDefinitionReader#setBeanNameGenerator
 	 * @see ClassPathBeanDefinitionScanner#setBeanNameGenerator
 	 */
@@ -157,8 +161,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Register one or more annotated classes to be processed.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
+	 *
 	 * @param annotatedClasses one or more annotated classes,
-	 * e.g. {@link Configuration @Configuration} classes
+	 *                         e.g. {@link Configuration @Configuration} classes
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
@@ -171,6 +176,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Perform a scan within the specified base packages.
 	 * <p>Note that {@link #refresh()} must be called in order for the context
 	 * to fully process the new classes.
+	 *
 	 * @param basePackages the packages to check for annotated classes
 	 * @see #register(Class...)
 	 * @see #refresh()
@@ -187,7 +193,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 
 	@Override
 	public <T> void registerBean(@Nullable String beanName, Class<T> beanClass,
-			@Nullable Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
+								 @Nullable Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
 
 		this.reader.registerBean(beanClass, beanName, supplier, customizers);
 	}
